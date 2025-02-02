@@ -59,3 +59,22 @@ jobs:
     dist_git_branches:
       - fedora-development
       - fedora-stable
+- job: propose_downstream
+  trigger: release
+  actions:
+    post-upstream-clone:
+        - "wget https://src.fedoraproject.org/rpms/bpfman/raw/main/f/bpfman.spec -O bpfman.spec"
+  specfile_path: bpfman.spec
+  dist_git_branches:
+    - fedora-all
+  upstream_tag_template: v{version}
+
+- job: koji_build
+  trigger: commit
+  dist_git_branches:
+    - fedora-all
+
+- job: bodhi_update
+  trigger: commit
+  dist_git_branches:
+    - fedora-branched # rawhide updates are created automatically
