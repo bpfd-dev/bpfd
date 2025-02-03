@@ -26,7 +26,7 @@ After reviewing the possible make targets it's quick and easy to get bpfman depl
 via a [KIND cluster](https://kind.sigs.k8s.io/) with:
 
 ```bash
-cd bpfman/bpfman-operator
+cd bpfman-operator
 make run-on-kind
 ```
 
@@ -40,67 +40,12 @@ make run-on-kind
 
 ### Deploy To Openshift Cluster
 
-First deploy the operator with one of the following two options:
-
-#### 1. Manually with Kustomize
-
-To install manually with Kustomize and raw manifests simply run the following
-commands.
-The Openshift cluster needs to be up and running and specified in `~/.kube/config`
-file.
-
-```bash
-cd bpfman/bpfman-operator
-make deploy-openshift
-```
-
-Which can then be cleaned up at a later time with:
-
-```bash
-make undeploy-openshift
-```
-
-#### 2. Via the OLM bundle
-
-The other option for installing the bpfman-operator is to install it using
-[OLM bundle](https://www.redhat.com/en/blog/deploying-operators-olm-bundles).
-
-First setup the namespace and certificates for the operator with:
-
-```bash
-cd bpfman/bpfman-operator
-oc apply -f ./hack/ocp-scc-hacks.yaml
-```
-
-Then use `operator-sdk` to install the bundle like so:
-
-```bash
-operator-sdk run bundle quay.io/bpfman/bpfman-operator-bundle:latest --namespace openshift-bpfman
-```
-
-Which can then be cleaned up at a later time with:
-
-```bash
-operator-sdk cleanup bpfman-operator
-```
-
-followed by
-
-```bash
-oc delete -f ./hack/ocp-scc-hacks.yaml
-```
-
-## Verify the Installation
-
-Independent of the method used to deploy, if the bpfman-operator came up successfully
-you will see the bpfman-daemon and bpfman-operator pods running without errors:
-
-```bash
-$ kubectl get pods -n bpfman
-NAME                             READY   STATUS    RESTARTS   AGE
-bpfman-daemon-w24pr                3/3     Running   0          130m
-bpfman-operator-78cf9c44c6-rv7f2   2/2     Running   0          132m
-```
+The recommend way of deploying bpfman to an OpenShift cluster is via the
+OpenShift Console and using Operator Hub.
+This is described in
+[OperatorHub via OpenShift Console](../developer-guide/develop-operator.md#operatorhub-via-openshift-console).
+For other options, see
+[Deploy To Existing Cluster](../developer-guide/develop-operator.md#deploy-to-existing-cluster).
 
 ## API Types Overview
 
@@ -162,7 +107,7 @@ Any of the cluster scoped samples can be applied as is.
 To test the deployment simply deploy one of the sample `xdpPrograms`:
 
 ```bash
-cd bpfman/bpfman-operator/
+cd bpfman-operator/
 kubectl apply -f config/samples/bpfman.io_v1alpha1_xdp_pass_xdpprogram.yaml
 ```
 

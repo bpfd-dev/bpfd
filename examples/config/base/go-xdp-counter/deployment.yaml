@@ -1,20 +1,15 @@
 ---
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: go-xdp-counter
----
-apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: bpfman-app-go-xdp-counter
-  namespace: go-xdp-counter
+  namespace: bpfman
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: go-xdp-counter-ds
-  namespace: go-xdp-counter
+  namespace: bpfman
   labels:
     k8s-app: go-xdp-counter
 spec:
