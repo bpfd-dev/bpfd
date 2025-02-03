@@ -1,0 +1,66 @@
+name: deb packaging and PPA push
+
+"on":
+  workflow_dispatch:
+
+jobs:
+  build_and_upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: default
+          override: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y devscripts debhelper
+
+      - name: Build binaries
+        run: |
+          cargo build --release --target x86_64-unknown-linux-gnu
+          cargo build --release --target aarch64-unknown-linux-gnu
+
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.PPA_GPG_PRIVATE_KEY }}" | gpg --batch --import -
+          echo "${{ secrets.PPA_GPG_PUBLIC_KEY }}" | gpg --batch --import -
+        env:
+          PPA_GPG_PRIVATE_KEY: ${{ secrets.PPA_GPG_PRIVATE_KEY }}
+          PPA_GPG_PUBLIC_KEY: ${{ secrets.PPA_GPG_PUBLIC_KEY }}
+
+      - name: Create symbolic link
+        run: ln -s contrib/debian debian
+
+      - name: Update changelog
+        run: |
+          FULL_DATE=$(date '+%a, %d %b %Y %H:%M:%S %z')
+          DATE=$(date '+%Y.%m.%d')
+          echo "podman ($DATE) jammy; urgency=medium" > debian/changelog
+          echo "" >> debian/changelog
+          echo "  * Debian ppa/deb packaging." >> debian/changelog
+          echo "" >> debian/changelog
+          echo " -- <MAINTAINER_USERNAME> <fluffykittens@pancakes.io>  $FULL_DATE" >> debian/changelog
+
+      - name: Build deb files
+        run: debuild -us -uc -S
+
+      - name: Sign and upload the deb file
+        run: |
+          set -ex
+          echo "Configuring gpg..."
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          DATE=$(date '+%Y.%m.%d')
+          echo "Using version date: $DATE"
+          echo "Running debsign..."
+          debsign --re-sign -k fluffykittens@pancakes.io -p "gpg --batch --passphrase ${{ secrets.PPA_GPG_PASSPHRASE }}" "../bpfman_${DATE}_source.changes"
+          echo "Uploading with dput..."
+          dput -f ppa:bpfman/ppa "../bpfman_${DATE}_source.changes"
+        env:
+          PPA_GPG_PASSPHRASE: ${{ secrets.PPA_GPG_PASSPHRASE }}

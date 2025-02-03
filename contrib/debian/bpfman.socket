@@ -1,0 +1,9 @@
+[Unit]
+Description=bpfman API Socket
+
+[Socket]
+ListenStream=/run/bpfman-sock/bpfman.sock
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target

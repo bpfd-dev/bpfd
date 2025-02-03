@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_test:
+override_dh_auto_build:
+override_dh_auto_clean:
+override_dh_dwz:
+override_dh_strip:
+
+override_dh_install:
+	mkdir -p debian/bpfman/usr/sbin/
+ifeq ($(shell dpkg --print-architecture),amd64)
+	cp ../target/debug/bpfman debian/bpfman/usr/sbin/
+	cp ../target/debug/bpfman-rpc debian/bpfman/usr/sbin/
+	cp ../target/debug/bpfman-ns debian/bpfman/usr/sbin/
+else ifeq ($(shell dpkg --print-architecture),arm64)
+	cp ../target/debug/bpfman debian/bpfman/usr/sbin/
+	cp ../target/debug/bpfman-rpc debian/bpfman/usr/sbin/
+	cp ../target/debug/bpfman-ns debian/bpfman/usr/sbin/
+endif
+	dh_install
+	# Install the systemd service file
+	mkdir -p debian/bpfman/lib/systemd/system/
+	install -D -m 644 debian/bpfman.service debian/bpfman/lib/systemd/system/
+	install -D -m 644 debian/bpfman.socket debian/bpfman/lib/systemd/system/

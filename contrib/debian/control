@@ -1,0 +1,13 @@
+Source: bpfman
+Section: net
+Priority: optional
+Maintainer: bpfman-maintainers <fluffykittens@pancakes.io>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://bpfman.io
+Rules-Requires-Root: no
+
+Package: bpfman
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: bpfman operates as an eBPF manager, focusing on simplifying the deployment and administration of eBPF programs.

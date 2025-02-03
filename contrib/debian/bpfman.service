@@ -1,0 +1,10 @@
+[Unit]
+Description=Run bpfman as a service
+DefaultDependencies=no
+Requires=bpfman.socket
+
+[Service]
+Environment="RUST_LOG=Info"
+ExecStart=/usr/sbin/bpfman-rpc
+#AmbientCapabilities=CAP_BPF CAP_DAC_READ_SEARCH CAP_NET_ADMIN CAP_SETPCAP CAP_SYS_ADMIN CAP_SYS_RESOURCE
+#CapabilityBoundingSet=CAP_BPF CAP_DAC_READ_SEARCH CAP_NET_ADMIN CAP_SETPCAP CAP_SYS_ADMIN CAP_SYS_RESOURCE
