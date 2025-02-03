@@ -76,6 +76,7 @@ nav:
       - Logging: developer-guide/logging.md
       - Configuration: developer-guide/configuration.md
       - Testing: developer-guide/testing.md
+      - Pre-Commit Hooks: developer-guide/pre-commit-hook.md
       - Debugging: developer-guide/debugging.md
       - Releasing: developer-guide/release.md
       - XDP Tutorial: developer-guide/xdp-overview.md

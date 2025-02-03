@@ -1,0 +1,43 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.31.0
+    hooks:
+      - id: yamllint
+        name: yamllint
+        entry: yamllint -c .yamllint.yaml --strict
+        language: system
+        types: [yaml]
+
+  # Custom hook to run Clippy with a specific nightly toolchain
+  - repo: local
+    hooks:
+      # Run Clippy
+      - id: clippy
+        name: Run Clippy
+        entry: >
+          bash -c 'export NIGHTLY_VERSION=nightly-2024-09-24 &&
+          cargo +${NIGHTLY_VERSION} clippy --all -- --deny warnings'
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      # Format Rust code
+      - id: fmt
+        name: Rust Format
+        entry: >
+          bash -c 'export NIGHTLY_VERSION=nightly-2024-09-24 &&
+          cargo +${NIGHTLY_VERSION} fmt --all -- --check'
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      # Run xtask public-api
+      - id: xtask-public-api
+        name: xtask Public API
+        entry: >
+          bash -c 'export NIGHTLY_VERSION=nightly-2024-09-24 &&
+          cargo xtask public-api --toolchain ${NIGHTLY_VERSION}'
+        language: system
+        types: [rust]
+        pass_filenames: false
